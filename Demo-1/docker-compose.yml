@@ -1,0 +1,43 @@
+# Docker compose from https://github.com/nextcloud/docker
+
+
+# Added passwords for MariaDB and version tags for the demonstration
+version: '2'
+
+volumes:
+  nextcloud:
+  db:
+
+services:
+  db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=workshop
+      - MYSQL_PASSWORD=workshop
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  nc-12:
+    image: nextcloud:12.0.4
+
+    ports:
+      - 8012:80
+    links:
+      - db
+    volumes:
+      - nextcloud:/var/www/html
+    restart: always
+
+  nc-13:
+    image: nextcloud:13.0.1
+    ports:
+      - 8013:80
+    links:
+      - db
+    volumes:
+      - nextcloud:/var/www/html
+    restart: always
